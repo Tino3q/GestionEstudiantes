@@ -1,0 +1,56 @@
+﻿@page "/Estudiantes/Create"
+@rendermode InteractiveServer
+@inject EstudiantesService estudianteService
+@inject NavigationManager navigationManager
+
+<EditForm Model="Estudiante" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Crear Estudiante</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">EstudianteId</label>
+                <InputNumber @bind-Value="Estudiante.EstudianteId" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nombres</label>
+                <InputText @bind-Value="Estudiante.Nombres" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Nombres)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="Estudiante.Email" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Email)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Edad</label>
+                <InputNumber @bind-Value="Estudiante.Edad" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Edad)" />
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo</button>
+                <button type="submit" class="btn btn-outline-success">Guardar</button>
+                <a href="/Estudiantes/Index" class="btn btn-outline-danger">Retroceder</a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Estudiante Estudiante { get; set; } = new Estudiante();
+
+    public void Nuevo()
+    {
+        Estudiante = new Estudiante();
+    }
+
+    public async Task Guardar()
+    {
+        await estudianteService.Guardar(Estudiante);
+        navigationManager.NavigateTo("/Estudiantes/Index");
+    }
+}

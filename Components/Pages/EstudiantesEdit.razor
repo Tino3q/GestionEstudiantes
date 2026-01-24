@@ -1,0 +1,69 @@
+﻿@page "/Estudiantes/Edit/{EstudianteId:int}"
+@rendermode InteractiveServer
+@inject EstudiantesService estudianteService
+@inject NavigationManager navigationManager
+
+<EditForm Model="Estudiante" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Editar Estudiante</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">EstudianteId</label>
+                <InputNumber @bind-Value="Estudiante.EstudianteId" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nombres</label>
+                <InputText @bind-Value="Estudiante.Nombres" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Nombres)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="Estudiante.Email" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Email)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Edad</label>
+                <InputNumber @bind-Value="Estudiante.Edad" class="form-control" />
+                <ValidationMessage For="@(() => Estudiante.Edad)" />
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-outline-success">Guardar</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+                <a href="/Estudiantes/Index" class="btn btn-outline-secondary">Retroceder</a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int EstudianteId { get; set; }
+    public Estudiante Estudiante { get; set; } = new Estudiante();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (EstudianteId > 0)
+        {
+            var encontrado = await estudianteService.Buscar(EstudianteId);
+            if (encontrado != null)
+                Estudiante = encontrado;
+        }
+    }
+
+    public async Task Guardar()
+    {
+        await estudianteService.Guardar(Estudiante);
+        navigationManager.NavigateTo("/Estudiantes/Index");
+    }
+
+    public async Task Eliminar()
+    {
+        await estudianteService.Eliminar(Estudiante.EstudianteId);
+        navigationManager.NavigateTo("/Estudiantes/Index");
+    }
+}
