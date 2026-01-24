@@ -1,0 +1,97 @@
+﻿@page "/Asignatura/Create"
+@page "/Asignatura/Edit/{AsignaturaId:int}"
+@using GestionEstudiantes.Models
+@using GestionEstudiantes.Services
+@inject AsignaturaService asignaturaService
+@inject NavigationManager navigation
+@rendermode InteractiveServer
+
+<EditForm Model="asignatura" OnValidSubmit="Guardar" FormName="FormAsignatura">
+    <DataAnnotationsValidator />
+
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="card shadow-sm col-md-5">
+            <div class="card-header bg-white text-center border-bottom-0 pt-4">
+                <h3 class="fw-light">@(asignatura.AsignaturaId == 0 ? "Registro de Asignatura" : "Modificar Asignatura")</h3>
+                <hr />
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Codigo</strong></label>
+                    <InputText class="form-control bg-light" @bind-Value="asignatura.Codigo" />
+                    <ValidationMessage For="@(() => asignatura.Codigo)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control bg-light" @bind-Value="asignatura.Nombre" />
+                    <ValidationMessage For="@(() => asignatura.Nombre)" />
+                    @if (!string.IsNullOrEmpty(mensajeError))
+                    {
+                        <div class="text-danger small">@mensajeError</div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aula</strong></label>
+                    <InputText class="form-control bg-light" @bind-Value="asignatura.Aula" />
+                    <ValidationMessage For="@(() => asignatura.Aula)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Creditos</strong></label>
+                    <InputNumber class="form-control bg-light" @bind-Value="asignatura.Creditos" />
+                    <ValidationMessage For="@(() => asignatura.Creditos)" />
+                </div>
+            </div>
+
+            <div class="card-footer bg-light d-flex justify-content-center gap-2 py-3">
+                <button type="button" class="btn btn-secondary px-4" @onclick="Volver">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-floppy"></i> @(asignatura.AsignaturaId == 0 ? "Guardar" : "Modificar")
+                </button>
+                @if (asignatura.AsignaturaId > 0)
+                {
+                    <button type="button" class="btn btn-danger px-4" @onclick="Eliminar">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int AsignaturaId { get; set; }
+    public Asignatura asignatura { get; set; } = new Asignatura();
+    public string mensajeError = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AsignaturaId > 0)
+        {
+            var encontrado = await asignaturaService.Buscar(AsignaturaId);
+            if (encontrado != null)
+                asignatura = encontrado;
+        }
+    }
+
+    public async Task Guardar()
+    {
+        mensajeError = "";
+        var guardo = await asignaturaService.Guardar(asignatura);
+        if (guardo) navigation.NavigateTo("/Asignatura/Index");
+        else mensajeError = "Ya existe una asignatura con este nombre";
+    }
+
+    public async Task Eliminar()
+    {
+        var eliminado = await asignaturaService.Eliminar(asignatura.AsignaturaId);
+        if (eliminado) navigation.NavigateTo("/Asignatura/Index");
+    }
+
+    public void Volver() => navigation.NavigateTo("/Asignatura/Index");
+}
