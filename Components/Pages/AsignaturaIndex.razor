@@ -1,0 +1,94 @@
+﻿@page "/Asignatura/Index"
+@inject AsignaturaService asignaturaService
+@inject NavigationManager navigation
+@rendermode InteractiveServer
+
+<div class="card shadow-lg">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h1 class="card-title">Registro de Asignaturas</h1>
+        <a href="/Asignatura/Create" class="btn btn-primary">
+            Crear
+        </a>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label class="form-label">Filtrar por</label>
+                <select class="form-select" @bind="filtro">
+                    <option value="id">AsignaturaId</option>
+                    <option value="codigo">Codigo</option>
+                    <option value="nombre">Nombre</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Busqueda</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Buscar" @bind="valorFiltro" />
+                    <button class="btn btn-outline-primary" @onclick="Consultar">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th><strong>AsignaturaId</strong></th>
+                    <th><strong>Codigo</strong></th>
+                    <th><strong>Nombre</strong></th>
+                    <th><strong>Aula</strong></th>
+                    <th><strong>Creditos</strong></th>
+                    <th><strong>Opciones</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in listaAsignaturas)
+                {
+                    <tr>
+                        <td>@item.AsignaturaId</td>
+                        <td>@item.Codigo</td>
+                        <td>@item.Nombre</td>
+                        <td>@item.Aula</td>
+                        <td>@item.Creditos</td>
+                        <td>
+                            <a href="/Asignatura/Edit/@item.AsignaturaId" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <label>Cantidad: @listaAsignaturas.Count</label>
+    </div>
+</div>
+
+@code {
+    public List<Asignatura> listaAsignaturas = new List<Asignatura>();
+    public string filtro = "id";
+    public string valorFiltro = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaAsignaturas = await asignaturaService.Listar(a => true);
+    }
+
+    public async Task Consultar()
+    {
+        if (string.IsNullOrWhiteSpace(valorFiltro))
+            listaAsignaturas = await asignaturaService.Listar(a => true);
+        else
+        {
+            if (filtro == "id" && int.TryParse(valorFiltro, out int id))
+                listaAsignaturas = await asignaturaService.Listar(a => a.AsignaturaId == id);
+            else if (filtro == "codigo")
+                listaAsignaturas = await asignaturaService.Listar(a => a.Codigo.ToLower().Contains(valorFiltro.ToLower()));
+            else if (filtro == "nombre")
+                listaAsignaturas = await asignaturaService.Listar(a => a.Nombre.ToLower().Contains(valorFiltro.ToLower()));
+        }
+    }
+}
