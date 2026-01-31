@@ -1,0 +1,78 @@
+﻿@page "/TiposPuntos/Index"
+@rendermode InteractiveServer
+@inject TiposPuntosServices service
+
+<PageTitle>Tipos de Puntos</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Registro de Tipos de Puntos</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <a href="/TiposPuntos/Create" class="btn btn-success">
+                        Crear Nuevo
+                    </a>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Icono</th>
+                        <th>Nombre</th>
+                        <th>Valor</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ListaTipos != null)
+                    {
+                        @foreach (var item in ListaTipos)
+                        {
+                            <tr>
+                                <td>@item.TipoId</td>
+                                <td class="text-center">
+                                    <i class="bi @item.Icono" style="color: @item.Color"></i>
+                                </td>
+                                <td>@item.Nombre</td>
+                                <td>@item.ValorPuntos</td>
+                                <td>
+                                    @if (item.Activo)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="/TiposPuntos/Edit/@item.TipoId" class="btn btn-outline-primary btn-sm">
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <p>Total de registros: @(ListaTipos?.Count ?? 0)</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<TiposPuntos> ListaTipos { get; set; } = new List<TiposPuntos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaTipos = await service.Listar();
+    }
+}

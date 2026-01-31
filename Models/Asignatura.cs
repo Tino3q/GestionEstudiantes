@@ -7,16 +7,16 @@ public class Asignatura
     [Key]
     public int AsignaturaId { get; set; }
 
-    [Required(ErrorMessage = "El codigo es obligatorio.")]
-    public string? Codigo { get; set; }
+    [Required(ErrorMessage = "Este Campo Es Requerido")]
+    public string? Codigo { get; set; } 
 
-    [Required(ErrorMessage = "El nombre es obligatorio.")]
-    public string? Nombre { get; set; }
+    [Required(ErrorMessage = "Este Campo es Requerido.")]
+    public string? Nombre { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "El aula es obligatoria.")]
+    [Required(ErrorMessage = "Este Campo Es Requerido")]
     public string? Aula { get; set; }
 
-    [Required(ErrorMessage = "Los creditos son obligatorios.")]
+    [Required(ErrorMessage = "Este Campo Es Requerido")]
     [Range(1, 10, ErrorMessage = "Los creditos deben estar entre 1 y 10.")]
     public int Creditos { get; set; }
 }

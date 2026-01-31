@@ -10,5 +10,8 @@ public class Contexto : DbContext
     public DbSet<Estudiante> Estudiantes { get; set;}
     public DbSet<Asignatura> Asignaturas { get; set;}
 
+    public DbSet<TiposPuntos> TiposPuntos { get; set; }
+
+
 
 }

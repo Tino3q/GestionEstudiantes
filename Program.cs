@@ -15,6 +15,7 @@ builder.Services.AddDbContextFactory<Contexto>(options => options.UseSqlServer(C
 
 builder.Services.AddScoped<EstudiantesService>();
 builder.Services.AddScoped<AsignaturaService>();
+builder.Services.AddScoped<TiposPuntosServices>();
 
 
 var app = builder.Build();

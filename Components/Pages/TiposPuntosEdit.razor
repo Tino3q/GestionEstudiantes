@@ -1,0 +1,112 @@
+﻿@page "/TiposPuntos/Edit/{TipoId:int}"
+@rendermode InteractiveServer
+@inject TiposPuntosServices service
+@inject NavigationManager navigation
+
+<PageTitle>TiposPuntos</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>TiposPuntos</h3>
+        </div>
+        <div class="card-body">
+            <EditForm Model="tipo" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText @bind-Value="tipo.Nombre" class="form-control" />
+                    <ValidationMessage For="@(() => tipo.Nombre)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <InputTextArea @bind-Value="tipo.Descripcion" class="form-control" />
+                    <ValidationMessage For="@(() => tipo.Descripcion)" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Valor Puntos</label>
+                        <InputNumber @bind-Value="tipo.ValorPuntos" class="form-control" />
+                        <ValidationMessage For="@(() => tipo.ValorPuntos)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Color</label>
+                        <InputSelect @bind-Value="tipo.Color" class="form-control">
+                            <option value="">-- Seleccione un color --</option>
+                            <option value="green">Verde</option>
+                            <option value="orange">Naranja</option>
+                            <option value="red">Rojo</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => tipo.Color)" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Icono</label>
+                        <InputSelect @bind-Value="tipo.Icono" class="form-control">
+                            <option value="">-- Seleccione un icono --</option>
+                            <option value="bi-star-fill">Estrella</option>
+                            <option value="bi-patch-check-fill">Check</option>
+                            <option value="bi-person-raised-hand">Participación</option>
+                            <option value="bi-exclamation-triangle-fill">Advertencia</option>
+                            <option value="bi-trophy-fill">Trofeo</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => tipo.Icono)" />
+                    </div>
+                    <div class="col-md-6 mb-3 d-flex align-items-center mt-4">
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="tipo.Activo" class="form-check-input" id="activoCheck" />
+                            <label class="form-check-label" for="activoCheck">Activo</label>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(mensajeError))
+                {
+                    <div class="alert alert-danger">@mensajeError</div>
+                }
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <a href="/TiposPuntos/Index" class="btn btn-secondary">Volver</a>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TipoId { get; set; }
+    public TiposPuntos tipo { get; set; } = new TiposPuntos();
+    private string? mensajeError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var encontrado = await service.Buscar(TipoId);
+        if (encontrado != null)
+        {
+            tipo = encontrado;
+        }
+        else
+        {
+            navigation.NavigateTo("/TiposPuntos/Index");
+        }
+    }
+
+    private async Task Guardar()
+    {
+        var resultado = await service.Guardar(tipo);
+        if (resultado)
+        {
+            navigation.NavigateTo("/TiposPuntos/Index");
+        }
+        else
+        {
+            mensajeError = "Error: El nombre ya existe.";
+        }
+    }
+}
